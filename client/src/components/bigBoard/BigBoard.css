@@ -1,0 +1,19 @@
+.big-board {
+    display: grid;
+    grid-template-columns: 150px 150px 150px;
+    grid-template-rows: 150px 150px 150px;
+    justify-content: center;
+}
+
+.quadrant {
+    font-size: large;
+    border: 3px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.quadrant, .quadrant-top-left {
+    border-right: 3px solid black;
+    border-bottom: 3px solid black;
+}

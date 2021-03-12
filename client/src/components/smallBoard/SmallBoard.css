@@ -1,0 +1,13 @@
+.small-board {
+    display: grid;
+    grid-template-columns: 45px 45px 45px;
+    grid-template-rows: 45px 45px 45px;
+}
+
+.small-quadrant {
+    font-size: large;
+    border: 3px solid blue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
