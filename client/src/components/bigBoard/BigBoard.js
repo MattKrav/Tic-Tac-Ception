@@ -24,13 +24,14 @@ export default function BigBoard() {
 
 	const {
 		boardValues: testBigBoard,
-		currentParentQuadrant,
 		currentTurn,
-		//overallBoardValues,
+		activeParentQuadrants,
+		gameOver,
+		overallBoardValues
 	} = useSelector(state => state.game)
 
-	const handleUserMove = (smallQuadrantIndex) => {
-		dispatch({ type: 'USERMOVED', payload: smallQuadrantIndex })
+	const handleUserMove = (parentQuadrant, childQuadrant) => {
+		dispatch({ type: 'USERMOVED', payload: { parentQuadrant, childQuadrant } })
 	}
 
 	return (
@@ -41,16 +42,20 @@ export default function BigBoard() {
 						<BigBoardQuadrant
 							key={i}
 							quadPosition={i}
-							isCurrentParentQuadrant={i === currentParentQuadrant}
+							winner={overallBoardValues[i]}
+							isCurrentParentQuadrant={activeParentQuadrants.includes(i)}
+							isClickableTest={activeParentQuadrants.includes(i) && !gameOver}
 							borderType='5px solid black'>
 							<SmallBoard
+								parentQuadrant={i}
 								quadrantValues={quadrantValues}
-								isInCurrentParentQuadrant={i === currentParentQuadrant}
+								isInCurrentParentQuadrant={activeParentQuadrants.includes(i)}
+								isClickableTest={activeParentQuadrants.includes(i) && !gameOver}// <----CLEANUP
 								onUserMove={handleUserMove} />
 						</BigBoardQuadrant>
 				)}
 			</BoardWrapper>
-			<h1 >{`Current Turn: ${currentTurn}`}</h1>
+			<h1 >{!gameOver ? `Current Turn: ${currentTurn}` : `GAME OVER: ${currentTurn} is a Loser`}</h1>
 		</>
 	)
 }

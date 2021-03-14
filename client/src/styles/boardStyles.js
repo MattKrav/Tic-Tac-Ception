@@ -38,7 +38,9 @@ export const BoardQuadrant = styled.div`
 
 //Big board and small board handle highlighting with different logic---------------
 export const BigBoardQuadrant = styled(BoardQuadrant)`
-    background-color: ${p => p.isCurrentParentQuadrant ? `yellow` : `null`};
+    background-color: ${p => p.isClickableTest ? `yellow` : `null`};
+    ${({ winner }) => winner === 'X' && `background-color: rgb(255, 166, 77)`}
+    ${({ winner }) => winner === 'O' && `background-color: hsl(300, 100%, 80%)`}
 `;
 
 export const SmallBoardQuadrant = styled(BoardQuadrant)`
