@@ -1,66 +1,69 @@
+import produce from "immer"
+
 const initialState = {
     activeParentQuadrants: [4],
-    boardValues: [
-        [null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null],
-    ],
-    overallBoardValues: [null, null, null, null, null, null, null, null, null],
+    boardValues: loadNullArray(9),
+    overallBoardValues: loadNullArray(1),
     gameOver: false,
     currentTurn: 'X',
 }
 
 export default function game(state = initialState, action) {
-
     switch (action.type) {
-        case 'USERMOVED': {
+        case 'USER_MOVED': {
             const { parentQuadrant, childQuadrant } = action.payload
 
-            let newBoardValues = state.boardValues
-            newBoardValues[parentQuadrant][childQuadrant] = state.currentTurn
-            //state.boardValues[state.currentParentQuadrant][childQuadrant] = state.currentTurn
-
-            let newOverallBoardValues = state.overallBoardValues
-            newOverallBoardValues[parentQuadrant] = quadrantWinner(newBoardValues[parentQuadrant])
-            //state.overallBoardValues[state.currentParentQuadrant] = quadrantWinner(state.boardValues[state.currentParentQuadrant])
-
-            let newActiveParentQuadrants = [childQuadrant]
-            if (newOverallBoardValues[childQuadrant]) newActiveParentQuadrants = newOverallBoardValues.map((value, i) => value ? null : i).filter(value => value !== null)
-
-            let newGameOver = state.gameOver
-            newGameOver = quadrantWinner(state.overallBoardValues) != null
+            const nextState = produce(state, draftState => {
+                // this places our X or O in the child quadrant that was just clicked
+                draftState.boardValues[parentQuadrant][childQuadrant] = state.currentTurn
+                // check if the last move resulted in a quadrant win
+                draftState.overallBoardValues[parentQuadrant] = quadrantWinner(draftState.boardValues[parentQuadrant])
+                // set the next active parent to whichever child quadrant was clicked
+                draftState.activeParentQuadrants = [childQuadrant]
+                // the logic below handles returning many playable quadrants when play is sent to a completed quadrant
+                if (draftState.overallBoardValues[childQuadrant]) {
+                    draftState.activeParentQuadrants =
+                        draftState.overallBoardValues.map((value, i) => value ? null : i).filter(value => value !== null)
+                }
+                // check if the last move caused an overall win
+                draftState.gameOver = quadrantWinner(draftState.overallBoardValues) != null
+            })
 
             return {
                 ...state,
-                activeParentQuadrants: newActiveParentQuadrants,
-                boardValues: newBoardValues,
-                overallBoardValues: newOverallBoardValues,
+                ...nextState,
                 currentTurn: state.currentTurn === 'X' ? 'O' : 'X',
-                gameOver: newGameOver
             }
+        }
+        case 'GAME_RESET': {
+            return initialState
         }
         default:
             return state
     }
 }
 
-const quadrantWinner = (quadrant) => {
-    if (quadrant[0] !== null && quadrant[0] === quadrant[1] && quadrant[1] === quadrant[2]) return quadrant[0]
-    if (quadrant[3] !== null && quadrant[3] === quadrant[4] && quadrant[4] === quadrant[5]) return quadrant[3]
-    if (quadrant[6] !== null && quadrant[6] === quadrant[7] && quadrant[7] === quadrant[8]) return quadrant[6]
+function loadNullArray(numberOfArrays) {
+    if (numberOfArrays < 1) return []
+    if (numberOfArrays === 1) return [null, null, null, null, null, null, null, null, null]
+    let newNullArray = []
+    for (let i = 0; i < numberOfArrays; i++) {
+        newNullArray.push(loadNullArray(1))
+    }
+    return newNullArray
+}
 
-    if (quadrant[0] !== null && quadrant[0] === quadrant[3] && quadrant[3] === quadrant[6]) return quadrant[0]
-    if (quadrant[1] !== null && quadrant[1] === quadrant[4] && quadrant[4] === quadrant[7]) return quadrant[1]
-    if (quadrant[2] !== null && quadrant[2] === quadrant[5] && quadrant[5] === quadrant[8]) return quadrant[2]
+function quadrantWinner(quadrant) {
+    if (quadrant[0] && quadrant[0] === quadrant[1] && quadrant[1] === quadrant[2]) return quadrant[0]
+    if (quadrant[3] && quadrant[3] === quadrant[4] && quadrant[4] === quadrant[5]) return quadrant[3]
+    if (quadrant[6] && quadrant[6] === quadrant[7] && quadrant[7] === quadrant[8]) return quadrant[6]
 
-    if (quadrant[0] !== null && quadrant[0] === quadrant[4] && quadrant[4] === quadrant[8]) return quadrant[0]
-    if (quadrant[2] !== null && quadrant[2] === quadrant[4] && quadrant[4] === quadrant[6]) return quadrant[2]
+    if (quadrant[0] && quadrant[0] === quadrant[3] && quadrant[3] === quadrant[6]) return quadrant[0]
+    if (quadrant[1] && quadrant[1] === quadrant[4] && quadrant[4] === quadrant[7]) return quadrant[1]
+    if (quadrant[2] && quadrant[2] === quadrant[5] && quadrant[5] === quadrant[8]) return quadrant[2]
+
+    if (quadrant[0] && quadrant[0] === quadrant[4] && quadrant[4] === quadrant[8]) return quadrant[0]
+    if (quadrant[2] && quadrant[2] === quadrant[4] && quadrant[4] === quadrant[6]) return quadrant[2]
 
     return null
 }

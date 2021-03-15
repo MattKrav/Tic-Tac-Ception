@@ -31,7 +31,11 @@ export default function BigBoard() {
 	} = useSelector(state => state.game)
 
 	const handleUserMove = (parentQuadrant, childQuadrant) => {
-		dispatch({ type: 'USERMOVED', payload: { parentQuadrant, childQuadrant } })
+		dispatch({ type: 'USER_MOVED', payload: { parentQuadrant, childQuadrant } })
+	}
+
+	const handleGameReset = () => {
+		dispatch({ type: 'GAME_RESET' })
 	}
 
 	return (
@@ -49,13 +53,19 @@ export default function BigBoard() {
 							<SmallBoard
 								parentQuadrant={i}
 								quadrantValues={quadrantValues}
-								isInCurrentParentQuadrant={activeParentQuadrants.includes(i)}
+								isInCurrentParentQuadrant={activeParentQuadrants.includes(i)}//<-- REMOVE
 								isClickableTest={activeParentQuadrants.includes(i) && !gameOver}// <----CLEANUP
 								onUserMove={handleUserMove} />
 						</BigBoardQuadrant>
 				)}
 			</BoardWrapper>
-			<h1 >{!gameOver ? `Current Turn: ${currentTurn}` : `GAME OVER: ${currentTurn} is a Loser`}</h1>
+			{
+				!gameOver ?
+					<h3>Current Turn: {currentTurn}</h3> :
+					<h1>GAME OVER: {currentTurn} is a Loser</h1>
+			}
+			<button onClick={handleGameReset}>RESET GAME</button>
+			{/* <h1 >{!gameOver ? `Current Turn: ${currentTurn}` : `GAME OVER: ${currentTurn} is a Loser`}</h1> */}
 		</>
 	)
 }
