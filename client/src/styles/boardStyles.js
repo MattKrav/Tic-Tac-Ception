@@ -41,11 +41,13 @@ export const BigBoardQuadrant = styled(BoardQuadrant)`
     background-color: ${p => p.isClickableTest ? `yellow` : `null`};
     ${({ winner }) => winner === 'X' && `background-color: rgb(255, 166, 77)`}
     ${({ winner }) => winner === 'O' && `background-color: hsl(300, 100%, 80%)`}
+    ${({ winner }) => winner === 'tie' && `background-color: hsl(217, 8%, 72%)`}
 `;
 
 export const SmallBoardQuadrant = styled(BoardQuadrant)`
     &:hover {
         background-color: ${p => p.isClickable ? `goldenrod` : `null`};
     }
+    font-size: 50px;
 `;
 //----------------------------------------------------------------------------------

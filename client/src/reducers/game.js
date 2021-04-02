@@ -5,6 +5,7 @@ const initialState = {
     boardValues: loadNullArray(9),
     overallBoardValues: loadNullArray(1),
     gameOver: false,
+    gameWinner: '',
     currentTurn: 'X',
 }
 
@@ -27,6 +28,9 @@ export default function game(state = initialState, action) {
                 }
                 // check if the last move caused an overall win
                 draftState.gameOver = quadrantWinner(draftState.overallBoardValues) != null
+                if (draftState.gameOver) {
+                    draftState.gameWinner = quadrantWinner(draftState.overallBoardValues)
+                }
             })
 
             return {
@@ -54,16 +58,19 @@ function loadNullArray(numberOfArrays) {
 }
 
 function quadrantWinner(quadrant) {
+    // rows
     if (quadrant[0] && quadrant[0] === quadrant[1] && quadrant[1] === quadrant[2]) return quadrant[0]
     if (quadrant[3] && quadrant[3] === quadrant[4] && quadrant[4] === quadrant[5]) return quadrant[3]
     if (quadrant[6] && quadrant[6] === quadrant[7] && quadrant[7] === quadrant[8]) return quadrant[6]
-
+    // columns
     if (quadrant[0] && quadrant[0] === quadrant[3] && quadrant[3] === quadrant[6]) return quadrant[0]
     if (quadrant[1] && quadrant[1] === quadrant[4] && quadrant[4] === quadrant[7]) return quadrant[1]
     if (quadrant[2] && quadrant[2] === quadrant[5] && quadrant[5] === quadrant[8]) return quadrant[2]
-
+    // crosses
     if (quadrant[0] && quadrant[0] === quadrant[4] && quadrant[4] === quadrant[8]) return quadrant[0]
     if (quadrant[2] && quadrant[2] === quadrant[4] && quadrant[4] === quadrant[6]) return quadrant[2]
+
+    if (!quadrant.includes(null)) return "tie"
 
     return null
 }

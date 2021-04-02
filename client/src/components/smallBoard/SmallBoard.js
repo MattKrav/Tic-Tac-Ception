@@ -5,7 +5,7 @@ import { BoardWrapper, SmallBoardQuadrant } from '../../styles/boardStyles'
 export default function SmallBoard({ parentQuadrant, isClickableTest, quadrantValues, isInCurrentParentQuadrant, onUserMove }) {
 
     return (
-        <BoardWrapper size="45px">
+        <BoardWrapper size="90px">
             {quadrantValues.map(
                 (quadrantValue, i) => {
                     const isClickable = isClickableTest && !quadrantValue//isInCurrentParentQuadrant && !quadrantValue
@@ -13,7 +13,7 @@ export default function SmallBoard({ parentQuadrant, isClickableTest, quadrantVa
                         key={i}
                         quadPosition={i}
                         isClickable={isClickable}
-                        borderType='2px solid red'
+                        borderType='4px solid red'
                         onClick={() => isClickable && onUserMove(parentQuadrant, i)}>
                         {quadrantValue}
                     </SmallBoardQuadrant>
